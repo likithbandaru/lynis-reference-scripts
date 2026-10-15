@@ -1,85 +1,62 @@
-    # Test        : KRNL-6000
-    # Description : Check sysctl parameters
-    # Sysctl      : net.ipv4.icmp_ignore_bogus_error_responses (=1)
-    if [ ! "${SYSCTL_READKEY}" = "" ]; then PREQS_MET="YES"; else PREQS_MET="NO"; fi
-    Register --test-no KRNL-6000 --preqs-met ${PREQS_MET} --weight L --network NO --category security --description "Check sysctl key pairs in scan profile"
+    # Test        : PKGS-7420
+    # Description : Detect toolkit to automatically download and apply upgrades
+    Register --test-no PKGS-7420 --weight L --network NO --category security --description "Detect toolkit to automatically download and apply upgrades"
     if [ ${SKIPTEST} -eq 0 ]; then
-        FOUND=0
-        DATA_TO_SCAN=""
-        N=0
-        Display --indent 2 --text "- Comparing sysctl key pairs with scan profile"
+        UNATTENDED_UPGRADES_TOOLKIT=0
+        UNATTENDED_UPGRADES_TOOL=""
+        UNATTENDED_UPGRADES_OPTION_AVAILABLE=0
 
-        # First scan optional profiles only (ignore default and custom)
-        for PROFILE in ${PROFILES}; do
-            FILE=$(echo ${PROFILE} | ${AWKBINARY} -F/ '{print $NF}')
-            if [ ! "${FILE}" = "default.prf" -a ! "${FILE}" = "custom.prf" ]; then
-                FIND=$(${GREPBINARY} "^config-data=sysctl;" ${PROFILE} | ${SEDBINARY} 's/ /-space-/g')
-                DATA_TO_SCAN="${DATA_TO_SCAN} ${FIND}"
-            fi
-        done
-
-        # Scan custom profile
-        if [ -n "${CUSTOM_PROFILE}" ]; then
-            FIND=$(${GREPBINARY} "^config-data=sysctl;" ${CUSTOM_PROFILE} | ${SEDBINARY} 's/ /-space-/g')
-            for LINE in ${FIND}; do
-                SYSCTLKEY=$(echo ${LINE} | ${AWKBINARY} -F\; '{ print $2 }')
-                HAS_KEY=$(echo ${DATA_TO_SCAN} | ${GREPBINARY} ";${SYSCTLKEY};")
-                if [ $? -gt 0 ]; then DATA_TO_SCAN="${DATA_TO_SCAN} ${LINE}"; fi
-            done
-        fi
-
-        # Last, use data from default profile
-        if [ -n "${DEFAULT_PROFILE}" ]; then
-            FIND=$(${GREPBINARY} "^config-data=sysctl;" ${DEFAULT_PROFILE} | ${SEDBINARY} 's/ /-space-/g')
-            for LINE in ${FIND}; do
-                SYSCTLKEY=$(echo ${LINE} | ${AWKBINARY} -F\; '{ print $2 }')
-                HAS_KEY=$(echo ${DATA_TO_SCAN} | ${GREPBINARY} ";${SYSCTLKEY};")
-                if [ $? -gt 0 ]; then DATA_TO_SCAN="${DATA_TO_SCAN} ${LINE}"; fi
-            done
-        fi
-
-        # Sort the results
-        DATA_TO_SCAN=$(echo ${DATA_TO_SCAN} | ${TRBINARY} ' ' '\n' | sort)
-
-        for line in ${DATA_TO_SCAN}; do
-            tFINDkey=$(echo ${line} | ${AWKBINARY} -F\; '{ print $2 }')
-            if ! SkipAtomicTest "${TEST_NO}:${tFINDkey}"; then
-                tFINDexpvalue=$(echo ${line} | ${AWKBINARY} -F\; '{ print $3 }' | ${TRBINARY} '|' ' ')
-                tFINDhp=$(echo ${line} | ${AWKBINARY} -F\; '{ print $4 }' | ${GREPBINARY} "[0-9]")
-                tFINDdesc=$(echo ${line} | ${AWKBINARY} -F\; '{ print $5 }' | ${SEDBINARY} 's/-space-/ /g')
-                tFINDcurvalue=$(${SYSCTL_READKEY} ${tFINDkey} 2> /dev/null)
-                if [ -n "${tFINDcurvalue}" ]; then
-                    positive_match=0
-                    for value in ${tFINDexpvalue}; do
-                        if [ "${value}" = "${tFINDcurvalue}" ]; then
-                            positive_match=1
-                        fi
-                    done
-                    if [ ${positive_match} -eq 1 ]; then
-                        LogText "Result: sysctl key ${tFINDkey} contains equal expected and current value (${tFINDexpvalue})"
-                        Display --indent 4 --text "- ${tFINDkey} (exp: ${tFINDexpvalue})" --result "${STATUS_OK}" --color GREEN
-                        AddHP ${tFINDhp} ${tFINDhp}
-                    else
-                        LogText "Result: sysctl key ${tFINDkey} has a different value than expected in scan profile. Expected=${tFINDexpvalue}, Real=${tFINDcurvalue}"
-                        Display --indent 4 --text "- ${tFINDkey} (exp: ${tFINDexpvalue})" --result "${STATUS_DIFFERENT}" --color RED
-                        AddHP 0 ${tFINDhp}
-                        FOUND=1
-                        N=$((N + 1))
-                        ReportDetails --test "${TEST_NO}" --service "sysctl" --field "${tFINDkey}" --value "${tFINDcurvalue}" --preferredvalue "${tFINDexpvalue}" --description "${tFINDdesc}"
+        case "${OS}" in
+            "Linux")
+                for DIST in CentOS Debian Fedora RHEL Ubuntu; do
+                    if [ "${LINUX_VERSION}" = "${DIST}" ] || [ "${LINUX_VERSION_LIKE}" = "${DIST}" ]; then
+                        UNATTENDED_UPGRADES_OPTION_AVAILABLE=1
                     fi
-                else
-                    LogText "Result: key ${tFINDkey} does not exist on this machine"
-                fi
-            else
-                LogText "Skipped test for ${tFINDkey} via profile"
-            fi
-        done
+                done
 
-        # Add suggestion if one or more sysctls have a different value than scan profile
-        if [ ${FOUND} -eq 1 ]; then
-            LogText "Result: found ${N} keys that can use tuning, according scan profile"
-            ReportSuggestion "${TEST_NO}" "One or more sysctl values differ from the scan profile and could be tweaked" "" "Change sysctl value or disable test (skip-test=${TEST_NO}:<sysctl-key>)"
+                if [ ${UNATTENDED_UPGRADES_OPTION_AVAILABLE} -eq 1 ]; then
+                    # Test available tools for Linux
+                    if [ -f "${ROOTDIR}bin/auter" ]; then
+                        UNATTENDED_UPGRADES_TOOL="auter"
+                        UNATTENDED_UPGRADES_TOOLKIT=1
+                        LogText "Result: found ${UNATTENDED_UPGRADES_TOOL}"
+                        Report "unattended_upgrade_tool[]=${UNATTENDED_UPGRADES_TOOL}"
+                    fi
+                    if [ -f "${ROOTDIR}sbin/yum-cron" ]; then
+                        UNATTENDED_UPGRADES_TOOL="yum-cron"
+                        UNATTENDED_UPGRADES_TOOLKIT=1
+                        LogText "Result: found ${UNATTENDED_UPGRADES_TOOL}"
+                        Report "unattended_upgrade_tool[]=${UNATTENDED_UPGRADES_TOOL}"
+                    fi
+                    if [ -f "${ROOTDIR}usr/bin/dnf-automatic" ]; then
+                        UNATTENDED_UPGRADES_TOOL="dnf-automatic"
+                        UNATTENDED_UPGRADES_TOOLKIT=1
+                        LogText "Result: found ${UNATTENDED_UPGRADES_TOOL}"
+                        Report "unattended_upgrade_tool[]=${UNATTENDED_UPGRADES_TOOL}"
+                    fi
+                    if [ -f "${ROOTDIR}usr/bin/unattended-upgrade" ]; then
+                        UNATTENDED_UPGRADES_TOOL="unattended-upgrade"
+                        UNATTENDED_UPGRADES_TOOLKIT=1
+                        LogText "Result: found ${UNATTENDED_UPGRADES_TOOL}"
+                        Report "unattended_upgrade_tool[]=${UNATTENDED_UPGRADES_TOOL}"
+                    fi
+                fi
+            ;;
+        esac
+
+        if [ ${UNATTENDED_UPGRADES_OPTION_AVAILABLE} -eq 1 ]; then
+            if [ ${UNATTENDED_UPGRADES_TOOLKIT} -eq 1 ]; then
+                AddHP 5 5
+                Display --indent 2 --text "- Toolkit for automatic upgrades (${UNATTENDED_UPGRADES_TOOL})" --result "${STATUS_FOUND}" --color GREEN
+            else
+                AddHP 1 5
+                Display --indent 2 --text "- Toolkit for automatic upgrades" --result "${STATUS_NOT_FOUND}" --color YELLOW
+                LogText "Result: no toolkit for automatic updates discovered"
+                ReportSuggestion "${TEST_NO}" "Consider using a tool to automatically apply upgrades"
+            fi
         fi
+
+        Report "unattended_upgrade_option_available=${UNATTENDED_UPGRADES_OPTION_AVAILABLE}"
     fi
 #
 #################################################################################
