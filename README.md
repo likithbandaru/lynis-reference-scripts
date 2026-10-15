@@ -48,6 +48,12 @@ https://github.com/likithbandaru/lynis-security-enhancements
 - Practised reading terminal audit results and identifying warnings.
 - Developed custom Bash scripts to perform additional security checks.
 
+## Conclusion
+
+This project helped me understand how Lynis performs security audits by checking system configurations and detecting potential security issues. By studying the PKGS-7420 and KRNL-6000 reference tests, I learned how existing audit checks work and used these concepts to develop two custom Bash scripts for automatic-update and ICMP security checks. The project improved my understanding of Linux security auditing, Bash scripting, and interpreting audit results.
+
 ## Acknowledgement
 
-The reference code belongs to the Lynis project and its contributors. The reference excerpts are included for educational purposes. The custom enhancements are maintained separately.
+I acknowledge the Lynis project and its contributors for the original reference code used for learning and comparison. The reference excerpts are included for educational purposes, and the custom enhancements are maintained separately.
+
+**Lynis project:** https://github.com/CISOfy/lynis
