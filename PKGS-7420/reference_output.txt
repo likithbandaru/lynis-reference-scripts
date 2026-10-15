@@ -1,0 +1,12 @@
+[+] [1;33mPorts and packages[0m
+------------------------------------
+[2C- Searching package managers[31C
+[2C- Toolkit for automatic upgrades[27C [ [1;33mNOT FOUND[0m ]
+
+[+] [1;33mNetworking[0m
+------------------------------------
+
+[+] [1;33mPrinters and Spools[0m
+------------------------------------
+
+[+] [1;33mSoftware: e-mail and messaging[0m
