@@ -1,0 +1,49 @@
+
+[+] [1;33mKernel Hardening[0m
+------------------------------------
+[2C- Comparing sysctl key pairs with scan profile[13C
+[4C- dev.tty.ldisc_autoload (exp: 0)[24C [ [1;31mDIFFERENT[0m ]
+[4C- fs.protected_fifos (exp: 2)[28C [ [1;31mDIFFERENT[0m ]
+[4C- fs.protected_hardlinks (exp: 1)[24C [ [1;32mOK[0m ]
+[4C- fs.protected_regular (exp: 2)[26C [ [1;32mOK[0m ]
+[4C- fs.protected_symlinks (exp: 1)[25C [ [1;32mOK[0m ]
+[4C- fs.suid_dumpable (exp: 0)[30C [ [1;32mOK[0m ]
+[4C- kernel.core_uses_pid (exp: 1)[26C [ [1;32mOK[0m ]
+[4C- kernel.ctrl-alt-del (exp: 0)[27C [ [1;32mOK[0m ]
+[4C- kernel.dmesg_restrict (exp: 1)[25C [ [1;31mDIFFERENT[0m ]
+[4C- kernel.kptr_restrict (exp: 2)[26C [ [1;31mDIFFERENT[0m ]
+[4C- kernel.modules_disabled (exp: 1)[23C [ [1;31mDIFFERENT[0m ]
+[4C- kernel.perf_event_paranoid (exp: 2 3 4)[16C [ [1;32mOK[0m ]
+[4C- kernel.randomize_va_space (exp: 2)[21C [ [1;32mOK[0m ]
+[4C- kernel.sysrq (exp: 0)[34C [ [1;31mDIFFERENT[0m ]
+[4C- kernel.unprivileged_bpf_disabled (exp: 1)[14C [ [1;31mDIFFERENT[0m ]
+[4C- kernel.yama.ptrace_scope (exp: 1 2 3)[18C [ [1;31mDIFFERENT[0m ]
+[4C- net.core.bpf_jit_harden (exp: 2)[23C [ [1;31mDIFFERENT[0m ]
+[4C- net.ipv4.conf.all.accept_redirects (exp: 0)[12C [ [1;31mDIFFERENT[0m ]
+[4C- net.ipv4.conf.all.accept_source_route (exp: 0)[9C [ [1;32mOK[0m ]
+[4C- net.ipv4.conf.all.bootp_relay (exp: 0)[17C [ [1;32mOK[0m ]
+[4C- net.ipv4.conf.all.forwarding (exp: 0)[18C [ [1;32mOK[0m ]
+[4C- net.ipv4.conf.all.log_martians (exp: 1)[16C [ [1;31mDIFFERENT[0m ]
+[4C- net.ipv4.conf.all.mc_forwarding (exp: 0)[15C [ [1;32mOK[0m ]
+[4C- net.ipv4.conf.all.proxy_arp (exp: 0)[19C [ [1;32mOK[0m ]
+[4C- net.ipv4.conf.all.rp_filter (exp: 1)[19C [ [1;31mDIFFERENT[0m ]
+[4C- net.ipv4.conf.all.send_redirects (exp: 0)[14C [ [1;31mDIFFERENT[0m ]
+[4C- net.ipv4.conf.default.accept_redirects (exp: 0)[8C [ [1;31mDIFFERENT[0m ]
+[4C- net.ipv4.conf.default.accept_source_route (exp: 0)[5C [ [1;32mOK[0m ]
+[4C- net.ipv4.conf.default.log_martians (exp: 1)[12C [ [1;31mDIFFERENT[0m ]
+[4C- net.ipv4.icmp_echo_ignore_broadcasts (exp: 1)[10C [ [1;32mOK[0m ]
+[4C- net.ipv4.icmp_ignore_bogus_error_responses (exp: 1)[4C [ [1;32mOK[0m ]
+[4C- net.ipv4.tcp_syncookies (exp: 1)[23C [ [1;32mOK[0m ]
+[4C- net.ipv4.tcp_timestamps (exp: 0 1)[21C [ [1;32mOK[0m ]
+[4C- net.ipv6.conf.all.accept_redirects (exp: 0)[12C [ [1;31mDIFFERENT[0m ]
+[4C- net.ipv6.conf.all.accept_source_route (exp: 0)[9C [ [1;32mOK[0m ]
+[4C- net.ipv6.conf.default.accept_redirects (exp: 0)[8C [ [1;31mDIFFERENT[0m ]
+[4C- net.ipv6.conf.default.accept_source_route (exp: 0)[5C [ [1;32mOK[0m ]
+
+[+] [1;33mHardening[0m
+------------------------------------
+
+[+] [1;33mCustom tests[0m
+------------------------------------
+[2C- Start custom tests... [35C
+
